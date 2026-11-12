@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SINH TỒN VÙNG ĐẤT MỚI: MẬT MÃ 34 (Bản Hoàn Thiện Chuẩn Sư Phạm)</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; -webkit-user-select: none; }
+        body { background: #0f172a; color: #fff; overflow: hidden; overscroll-behavior: none; touch-action: none; height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        
+        .cinematic-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%); }
+        .skyline-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40vh; min-height: 250px; z-index: -1; opacity: 0.15;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 250" preserveAspectRatio="xMidYMax slice"><path d="M0,250 L0,200 L50,200 L50,150 L80,150 L80,180 L120,180 L120,80 L160,80 L160,250 Z" fill="%2338bdf8"/><path d="M200,250 L200,50 L230,50 L230,40 L240,20 L250,40 L250,50 L280,50 L280,250 Z" fill="%2338bdf8"/><rect x="210" y="70" width="10" height="20" fill="%230f172a"/><rect x="230" y="70" width="10" height="20" fill="%230f172a"/><rect x="250" y="70" width="10" height="20" fill="%230f172a"/><rect x="210" y="110" width="10" height="20" fill="%230f172a"/><rect x="230" y="110" width="10" height="20" fill="%230f172a"/><rect x="250" y="110" width="10" height="20" fill="%230f172a"/><path d="M320,250 L320,120 L380,120 L380,250 Z" fill="%2338bdf8"/><line x1="450" y1="250" x2="450" y2="100" stroke="%2338bdf8" stroke-width="4"/><circle cx="450" cy="100" r="5" fill="%2338bdf8"/><path d="M450,100 L430,60 L445,95 Z" fill="%2338bdf8"/><path d="M450,100 L490,110 L455,105 Z" fill="%2338bdf8"/><path d="M450,100 L430,130 L445,105 Z" fill="%2338bdf8"/><line x1="550" y1="250" x2="550" y2="130" stroke="%2338bdf8" stroke-width="3"/><circle cx="550" cy="130" r="4" fill="%2338bdf8"/><path d="M550,130 L535,100 L545,125 Z" fill="%2338bdf8"/><path d="M550,130 L580,140 L555,135 Z" fill="%2338bdf8"/><path d="M550,130 L535,150 L545,135 Z" fill="%2338bdf8"/><path d="M650,250 L650,180 L700,180 L700,150 L750,150 L750,250 Z" fill="%2338bdf8"/><path d="M800,250 L800,220 L780,220 L820,200 L950,200 L970,220 L950,250 Z" fill="%2338bdf8"/><rect x="830" y="180" width="30" height="20" fill="%2338bdf8"/><rect x="870" y="180" width="30" height="20" fill="%2338bdf8"/><rect x="910" y="180" width="30" height="20" fill="%2338bdf8"/><rect x="850" y="160" width="30" height="20" fill="%2338bdf8"/><rect x="890" y="160" width="30" height="20" fill="%2338bdf8"/></svg>');
+            background-repeat: repeat-x; background-position: bottom;
+        }
+
+        .screen { display: none; width: 100%; height: 100%; max-width: 600px; position: relative; flex-direction: column; align-items: center; padding: 20px; z-index: 2; }
+        .screen.active { display: flex; }
+        
+        #login-screen h1 { font-size: 2.5rem; text-align: center; color: #facc15; text-shadow: 0 0 15px rgba(202, 138, 4, 0.5); margin-bottom: 15px; line-height: 1.2; text-transform: uppercase; font-weight: 900;}
+        .input-group { width: 100%; margin-bottom: 15px; }
+        input[type="text"] { width: 100%; padding: 15px; border-radius: 10px; border: 2px solid #475569; background: rgba(15,23,42,0.85); color: #fff; font-size: 1.2rem; text-align: center; outline: none; backdrop-filter: blur(5px); }
+        input[type="text"]:focus { border-color: #facc15; }
+        .btn { background: linear-gradient(45deg, #d97706, #f59e0b); border: none; padding: 18px 30px; border-radius: 15px; color: #fff; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(245,158,11,0.4); width: 100%; transition: transform 0.1s; text-transform: uppercase; letter-spacing: 1px;}
+        .btn:active { transform: scale(0.95); }
+
+        .hud { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(15,23,42,0.85); border-radius: 12px; margin-bottom: 10px; border: 1px solid #475569; z-index: 10; backdrop-filter: blur(5px);}
+        .hud-item { display: flex; flex-direction: column; align-items: center; }
+        .hud-title { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+        .hud-value { font-size: 1.3rem; font-weight: bold; color: #fff; }
+        .hearts { color: #ef4444; letter-spacing: 2px; }
+
+        .combo-text { color: #facc15; font-size: 1.2rem; font-weight: 900; opacity: 0; transition: opacity 0.3s, transform 0.3s; position: absolute; left: 50%; transform: translateX(-50%);}
+        .combo-text.show { opacity: 1; transform: translateX(-50%) scale(1.2); animation: comboPulse 0.5s alternate infinite; }
+        @keyframes comboPulse { from {text-shadow: 0 0 10px #facc15;} to {text-shadow: 0 0 20px #ef4444, 0 0 30px #facc15;} }
+
+        .card-container { flex: 1; width: 100%; position: relative; perspective: 1000px; display: flex; justify-content: center; align-items: center; }
+        .card { width: 95%; height: 95%; background: #ffffff; border: 4px solid #facc15; border-radius: 20px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: absolute; transition: transform 0.25s ease-out, opacity 0.25s ease-out; color: #0f172a; overflow: hidden; }
+        
+        .card::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23334155" stroke-width="3"/><circle cx="50" cy="50" r="30" fill="none" stroke="%23334155" stroke-width="1" stroke-dasharray="4 4"/><path d="M50,0 L50,100 M0,50 L100,50" stroke="%23334155" stroke-width="2"/><path d="M15,15 L85,85 M15,85 L85,15" stroke="%23334155" stroke-width="1"/><polygon points="50,15 55,45 85,50 55,55 50,85 45,55 15,50 45,45" fill="%23334155"/></svg>'); background-size: contain; background-repeat: no-repeat; opacity: 0.05; pointer-events: none; z-index: 1; }
+
+        .laurel { position: absolute; top: 50%; transform: translateY(-50%); width: 45px; height: 75%; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 200"><path d="M40,190 Q10,130 15,10" fill="none" stroke="%23ca8a04" stroke-width="3" stroke-linecap="round"/><path d="M38,170 Q15,160 22,135 Q38,150 38,170" fill="%23facc15" stroke="%23ca8a04" stroke-width="1"/><path d="M35,130 Q12,120 19,95 Q35,110 35,130" fill="%23facc15" stroke="%23ca8a04" stroke-width="1"/><path d="M32,90 Q9,80 16,55 Q32,70 32,90" fill="%23facc15" stroke="%23ca8a04" stroke-width="1"/><path d="M29,50 Q6,40 13,15 Q29,30 29,50" fill="%23facc15" stroke="%23ca8a04" stroke-width="1"/></svg>'); background-size: 100% 100%; opacity: 0.85; pointer-events: none; z-index: 1; }
+        .laurel-left { left: -5px; }
+        .laurel-right { right: -5px; transform: translateY(-50%) scaleX(-1); }
+
+        .card-province { color: #fff; padding: 8px 15px; border-radius: 20px; font-weight: bold; margin-top: 5px; margin-bottom: 10px; font-size: 1rem; text-align: center; position: relative; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.3); letter-spacing: 1px;}
+        .color-dbscl { background: linear-gradient(45deg, #166534, #22c55e); }
+        .color-dnb { background: linear-gradient(45deg, #991b1b, #ef4444); }
+        .color-tn { background: linear-gradient(45deg, #78350f, #b45309); }
+        .color-ntb { background: linear-gradient(45deg, #ea580c, #f97316); }
+        .color-tb { background: linear-gradient(45deg, #3f6212, #65a30d); }
+        .color-dbsh { background: linear-gradient(45deg, #075985, #0ea5e9); }
+        
+        .card-context { flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; z-index: 2; }
+        .card-context-inner { text-align: center; line-height: 1.5; font-size: 1.15rem; color: #1e293b; padding: 0 35px; }
+        .card-context-inner b { color: #b91c1c; }
+        .card-job { font-size: 1.25rem; color: #0369a1; font-weight: bold; text-align: center; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; z-index: 2; }
+        
+        .card.swipe-up { transform: translateY(-150%) scale(0.8) rotate(10deg); opacity: 0; }
+        .card.swipe-down { transform: translateY(150%) scale(0.8) rotate(-10deg); opacity: 0; }
+
+        .action-btns { width: 100%; display: flex; justify-content: space-between; gap: 15px; margin-bottom: 10px; }
+        .action-btn { flex: 1; padding: 20px 10px; border-radius: 20px; border: none; font-size: 1.2rem; font-weight: bold; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .btn-reject { background: linear-gradient(180deg, #ef4444, #991b1b); box-shadow: 0 8px 0 #7f1d1d, 0 15px 20px rgba(0,0,0,0.4); }
+        .btn-accept { background: linear-gradient(180deg, #22c55e, #166534); box-shadow: 0 8px 0 #14532d, 0 15px 20px rgba(0,0,0,0.4); }
+        .action-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 rgba(0,0,0,0.8); }
+
+        .timer-bar { width: 100%; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 10px 0; border: 1px solid #000; z-index: 10; }
+        .timer-fill { height: 100%; background: #22c55e; width: 100%; transition: width 0.1s linear, background-color 0.3s; }
+        .timer-fill.warning { background: #ef4444; }
+
+        #voucher-card { background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 3px solid #f59e0b; border-radius: 15px; padding: 20px; color: #1e293b; width: 100%; margin-bottom: 20px; text-align: center; position: relative; overflow: hidden; }
+        
+        #voucher-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M10,90 Q50,0 90,90" fill="none" stroke="rgba(202,138,4,0.15)" stroke-width="5"/></svg>'); pointer-events: none; z-index: 1; }
+        
+        .voucher-title { font-size: 1.3rem; color: #b45309; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; position: relative; z-index: 2;}
+        .voucher-desc { font-size: 1rem; margin-bottom: 5px; font-weight: bold; position: relative; z-index: 2;}
+        .voucher-rank { font-size: 1.4rem; color: #ef4444; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 2px 4px rgba(239,68,68,0.2); border-bottom: 2px dashed #cbd5e1; padding-bottom: 15px; position: relative; z-index: 2;}
+        
+        .voucher-meta { font-size: 0.85rem; color: #475569; text-align: left; position: relative; z-index: 2;}
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 3.5rem; color: rgba(245,158,11,0.1); font-weight: bold; pointer-events: none; white-space: nowrap; z-index: 1;}
+
+        #reward-selection { display: none; width: 100%; background: rgba(15,23,42,0.85); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #475569; backdrop-filter: blur(5px);}
+        .reward-btn { background: #334155; border: 2px solid #facc15; color: #fff; padding: 12px; width: 100%; margin-bottom: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem;}
+        .reward-btn:hover { background: #facc15; color: #000; }
+
+        .popup-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .popup-box { background: #1e293b; border: 2px solid #ef4444; border-radius: 15px; padding: 25px; text-align: center; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(239,68,68,0.3); }
+        .popup-title { font-size: 1.3rem; margin-bottom: 15px; font-weight: bold; }
+        .popup-desc { font-size: 1rem; color: #cbd5e1; margin-bottom: 20px; line-height: 1.4; }
+        .cooldown-text { font-size: 2rem; color: #facc15; font-weight: bold; font-family: monospace; letter-spacing: 2px; margin: 15px 0; display: inline-block; cursor: pointer; padding: 5px 20px; border-radius: 10px; border: 1px dashed transparent; transition: border 0.2s;}
+        .cooldown-text:active { border-color: #facc15; background: rgba(250, 204, 21, 0.1); }
+        
+        .ans-btn { background: #334155; color: #fff; border: 1px solid #94a3b8; padding: 12px; margin-bottom: 10px; width: 100%; border-radius: 8px; text-align: left; cursor: pointer; font-size: 1rem;}
+        .ans-btn:active { background: #475569; }
+        
+        #error-msg { color: #ef4444; font-size: 0.9rem; margin-top: 10px; display: none; text-align: center; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="cinematic-bg"></div>
+    <div class="skyline-layer"></div>
+
+    <div id="login-screen" class="screen active">
+        <h2 style="color: #cbd5e1; font-size: 1rem; margin-bottom: 5px; font-weight: 600; letter-spacing: 1px;">THỰC HÀNH E-LEARNING</h2>
+        <h1>MẬT MÃ 34<br><span style="font-size: 1.2rem; color: #38bdf8; display: block; margin-top: 5px;">DI CƯ & SINH KẾ 4.0</span></h1>
+        
+        <div style="background: rgba(15,23,42,0.85); padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: justify; font-size: 0.95rem; color: #e2e8f0; border-left: 4px solid #facc15; line-height: 1.5; backdrop-filter: blur(5px);">
+            <b>Khảo thí:</b> Đọc kỹ tổ hợp Bối cảnh - Nghề nghiệp. Vuốt Lên/Xanh (Duyệt) nếu tương thích. Vuốt Xuống/Đỏ (Từ chối) nếu là bẫy logic.<br>
+            <b>Thời gian:</b> 20 giây/đơn hàng.
+        </div>
+
+        <div class="input-group"><input type="text" id="playerName" placeholder="Nhập Họ và Tên..." autocomplete="off"></div>
+        <div class="input-group"><input type="text" id="playerClass" placeholder="Nhập Lớp (VD: 12A1)..." autocomplete="off"></div>
+        <button class="btn" onclick="initAudioAndStart()">🚀 BẮT ĐẦU ĐÁNH GIÁ</button>
+        <p id="error-msg">Vui lòng nhập đầy đủ thông tin!</p>
+        
+        <div id="limit-info" style="margin-top: 20px; text-align: center; display: none; background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 10px; border: 1px solid #ef4444; backdrop-filter: blur(5px);">
+            <p style="color: #fca5a5; font-size: 0.9rem;">Hệ thống đang khóa tạm thời do sai quá số lần.</p>
+            <div id="login-cooldown" class="cooldown-text" onclick="teacherUnlock()">00:00</div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="hud">
+            <div class="hud-item"><span class="hud-title">Sinh Mệnh</span><span class="hud-value hearts" id="ui-hearts">❤️❤️❤️</span></div>
+            <div id="ui-combo" class="combo-text">COMBO x0</div>
+            <div class="hud-item"><span class="hud-title">Tiến Độ</span><span class="hud-value"><span id="ui-score" style="color: #22c55e;">0</span> / 15</span></div>
+        </div>
+        <div class="timer-bar"><div class="timer-fill" id="ui-timer"></div></div>
+        <div class="card-container" id="card-area"></div>
+        <div class="action-btns">
+            <button class="action-btn btn-reject" onclick="handleAnswer(false)"><span>👎 TỪ CHỐI</span></button>
+            <button class="action-btn btn-accept" onclick="handleAnswer(true)"><span>👍 DUYỆT</span></button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <h2 id="result-title" style="margin-bottom: 10px; font-size: 1.6rem; text-align: center;"></h2>
+        <p id="result-subtitle" style="margin-bottom: 20px; color: #cbd5e1; text-align: center; font-size: 0.9rem;"></p>
+
+        <div id="reward-selection">
+            <p style="color: #facc15; font-weight: bold; margin-bottom: 15px; text-align: center;">⭐ CHỌN PHẦN THƯỞNG ĐÁNH GIÁ:</p>
+            <button class="reward-btn" onclick="issueVoucher(0)">💳 ĐIỂM CỘNG (+0.5đ Thường Xuyên)</button>
+            <button class="reward-btn" onclick="issueVoucher(1)">🛡️ MIỄN TRỪ (Bỏ qua 1 lỗi mã đề)</button>
+            <button class="reward-btn" id="btn-s-rank" style="display: none;" onclick="issueVoucher(2)">⚔️ QUY ĐỔI ĐÁNH GIÁ TX (Hoàn hảo)</button>
+        </div>
+        
+        <div id="voucher-card" style="display: none;">
+            <div class="watermark">VÕ VĂN KIỆT</div>
+            <div class="voucher-title" id="reward-name">THẺ QUY ĐỔI ĐÁNH GIÁ TX</div>
+            <div class="voucher-desc" id="reward-desc">Đạt Điểm Tuyệt Đối 1 cột Thường xuyên</div>
+            <div class="voucher-rank" id="reward-rank">🏆 CHIẾN THẦN QUY HOẠCH</div>
+            <div class="voucher-meta">
+                <p>👤 <b>Học sinh:</b> <span id="v-name"></span> - <span id="v-class"></span></p>
+                <p>⏱️ <b>Hoàn thành:</b> <span id="v-time"></span></p>
+                <p>🔑 <b>Mã hệ thống:</b> <span id="v-hash"></span></p>
+            </div>
+        </div>
+
+        <button id="btn-capture" class="btn" style="background: linear-gradient(45deg, #c026d3, #db2777); margin-bottom: 15px; display: none;" onclick="captureVoucher()">📸 LƯU ẢNH MINH CHỨNG</button>
+        <button class="btn" onclick="finishGameSession()">ĐÓNG HỆ THỐNG</button>
+    </div>
+
+    <!-- Popup Phản hồi lỗi -->
+    <div class="popup-overlay" id="feedback-popup">
+        <div class="popup-box">
+            <div class="popup-title" style="color: #ef4444;">🚨 CẢNH BÁO LỖI</div>
+            <div class="popup-desc" id="feedback-text"></div>
+            <button class="btn" style="background: #334155; box-shadow: none;" onclick="nextCard()">Tiếp tục</button>
+        </div>
+    </div>
+
+    <!-- Popup Hồi sinh bằng Trắc nghiệm -->
+    <div class="popup-overlay" id="revive-popup">
+        <div class="popup-box">
+            <div class="popup-title" style="color: #38bdf8;">⚕️ CƠ HỘI CUỐI CÙNG</div>
+            <div class="popup-desc" style="margin-bottom: 10px;">Trả lời đúng câu hỏi sau để được cấp cứu 1 Tim và chơi tiếp! Sai là loại luôn!</div>
+            <div id="revive-question" style="font-weight: bold; margin-bottom: 15px; color: #fff; text-align: left; font-size: 1.1rem;"></div>
+            <div id="revive-answers"></div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="cooldown-popup">
+        <div class="popup-box">
+            <div class="popup-title" style="color: #facc15;">⏳ KHÓA BÀI LÀM</div>
+            <div class="popup-desc">Bạn đã đánh giá sai quá 3 lần. Vui lòng ôn bài và thử lại sau:</div>
+            <div class="cooldown-text" id="cooldown-timer" onclick="teacherUnlock()">15:00</div>
+        </div>
+    </div>
+
+    <script>
+        let unlockTaps = 0, unlockTimer;
+        function teacherUnlock() {
+            unlockTaps++; clearTimeout(unlockTimer);
+            unlockTimer = setTimeout(() => { unlockTaps = 0; }, 2000);
+            if (unlockTaps >= 5) {
+                unlockTaps = 0;
+                let pin = prompt("🔐 HỆ THỐNG GIÁO VIÊN\nNhập mã PIN để cấp quyền mở khóa khẩn cấp:");
+                if (pin === "3434") {
+                    localStorage.removeItem("m34_cd"); localStorage.removeItem("m34_time");
+                    alert("✅ Mở khóa thành công!"); location.reload();
+                } else if (pin) alert("❌ Mã PIN sai!");
+            }
+        }
+
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        function playSnd(t) {
+            if (!audioCtx) return;
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            
+            if (t === 'ok') { o.type='sine'; o.frequency.setValueAtTime(800, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime+0.1); g.gain.setValueAtTime(0.2, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.1); o.start(); o.stop(audioCtx.currentTime+0.1); }
+            else if (t === 'fail') { o.type='square'; o.frequency.setValueAtTime(400, audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime+0.4); g.gain.setValueAtTime(0.3, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.4); o.start(); o.stop(audioCtx.currentTime+0.4); }
+            else if (t === 'tick') { o.type='triangle'; o.frequency.setValueAtTime(1000, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.05); o.start(); o.stop(audioCtx.currentTime+0.05); }
+        }
+
+        /* 
+           CẬP NHẬT KIẾN THỨC THEO GÓP Ý: Thay thế "bờ biển sâu" bằng thuật ngữ chuẩn xác
+           "thềm lục địa hẹp, vùng biển sâu, đường bờ biển nhiều vũng vịnh".
+        */
+        const contexts = [
+            { cid: "c1", prov: "ĐBSCL", colorClass: "color-dbscl", text: "Đất lúa thu hẹp nhanh do <b>hạn mặn gay gắt</b>, địa hình <b>thấp phẳng</b>, nền <b>đất yếu</b>." },
+            { cid: "c2", prov: "Đông Nam Bộ", colorClass: "color-dnb", text: "Vùng kinh tế trọng điểm, chuyển dịch sang <b>công nghiệp lõi 4.0</b>, giá mặt bằng cực cao." },
+            { cid: "c3", prov: "Tây Nguyên", colorClass: "color-tn", text: "Địa hình <b>cao nguyên xếp tầng</b> (sông dốc), đất bazan màu mỡ, <b>diện tích rừng lớn nhất</b>." },
+            { cid: "c4", prov: "Nam Trung Bộ", colorClass: "color-ntb", text: "Sông ngòi <b>ngắn dốc</b>, mùa khô hạn hán nhưng <b>nắng gió dồi dào</b>, <b>thềm lục địa hẹp</b>, vùng biển sâu và nhiều vũng vịnh." },
+            { cid: "c5", prov: "Tây Bắc", colorClass: "color-tb", text: "Địa hình <b>núi non hiểm trở</b>, sông suối <b>độ dốc lớn</b>, có <b>khí hậu ôn đới</b>." },
+            { cid: "c6", prov: "ĐBSH", colorClass: "color-dbsh", text: "Mật độ dân số <b>cao nhất nước</b>, quỹ đất nông nghiệp hẹp, <b>địa hình bằng phẳng</b>." }
+        ];
+
+        const jobs = [
+            { jid: "j1", title: "🚁 Phi công Drone Nông nghiệp", valid_cids: ["c1", "c5", "c6"], explanation: "Drone hợp rải phân ở ĐBSCL đất yếu, phun thuốc chè ở Tây Bắc núi dốc, hoặc tối ưu quỹ đất hẹp ĐBSH." },
+            { jid: "j2", title: "🏭 Kỹ sư Luyện kim Nặng", valid_cids: [], explanation: "Sai bối cảnh không gian. Không hợp nền đất yếu (ĐBSCL) hay quỹ đất chật hẹp, giá cao ở các vùng trọng điểm." },
+            { jid: "j3", title: "🔬 Kỹ sư Vi mạch Bán dẫn", valid_cids: ["c2"], explanation: "ĐNB là vùng duy nhất hiện nay đủ hạ tầng khu công nghệ cao và vốn FDI để làm vi mạch lõi." },
+            { jid: "j4", title: "🌳 Chuyên gia Tín chỉ Carbon", valid_cids: ["c3", "c5"], explanation: "Lợi thế tuyệt đối thuộc về các vùng có diện tích rừng lớn (đặc biệt là Tây Nguyên, Tây Bắc)." },
+            { jid: "j5", title: "⚓ Kỹ sư Cảng biển nước sâu", valid_cids: ["c2", "c4"], explanation: "Tây Nguyên không giáp biển. Nam Trung Bộ (thềm lục địa hẹp, sâu) và ĐNB rất thuận lợi xây dựng cảng nước sâu." },
+            { jid: "j6", title: "☀️ Kỹ sư Năng lượng Mặt trời", valid_cids: ["c4"], explanation: "Phù hợp nhất với vùng có số giờ nắng cao nhất cả nước, biến bất lợi khô hạn thành tài nguyên." },
+            { jid: "j7", title: "💧 Kỹ sư Thủy điện", valid_cids: ["c3", "c4", "c5"], explanation: "Sông ngòi có độ dốc lớn (Tây Bắc, Tây Nguyên, Nam Trung Bộ) là thế mạnh thủy điện. Đồng bằng thì không thể." },
+            { jid: "j8", title: "🏕️ Hướng dẫn viên Sinh thái", valid_cids: ["c1", "c3", "c5"], explanation: "Tây Bắc (ôn đới), ĐBSCL (miệt vườn), Tây Nguyên (đại ngàn) đều có lợi thế du lịch sinh thái đặc trưng." }
+        ];
+
+        const reviveQuestions = [
+            { q: "Quốc lộ 1 không đi qua vùng kinh tế nào sau đây?", options: ["A. Đông Nam Bộ", "B. Tây Nguyên", "C. Bắc Trung Bộ", "D. Đồng bằng sông Hồng"], ans: 1 },
+            { q: "Ngành công nghiệp trọng điểm nào đang thu hút lao động nhất ở ĐNB?", options: ["A. Luyện kim", "B. Chế biến lương thực", "C. Sản xuất hàng tiêu dùng", "D. Đóng tàu"], ans: 2 }
+        ];
+
+        let deck = [];
+        function generateDeck() {
+            deck = [];
+            while(deck.length < 15) {
+                let ctx = contexts[Math.floor(Math.random() * contexts.length)];
+                let job = jobs[Math.floor(Math.random() * jobs.length)];
+                if(Math.random() > 0.5) {
+                    let validJobs = jobs.filter(j => j.valid_cids.includes(ctx.cid));
+                    if(validJobs.length > 0) job = validJobs[Math.floor(Math.random() * validJobs.length)];
+                }
+                deck.push({
+                    province: ctx.prov,
+                    colorClass: ctx.colorClass,
+                    contextText: ctx.text,
+                    jobTitle: job.title,
+                    isCorrect: job.valid_cids.includes(ctx.cid),
+                    explanation: job.explanation
+                });
+            }
+        }
+
+        const rewards = [
+            { name: "CHỨNG NHẬN CỘNG ĐIỂM", desc: "Được cộng 0.5 điểm vào 1 bài Thường xuyên" },
+            { name: "CHỨNG NHẬN MIỄN TRỪ", desc: "Không trừ điểm 1 lỗi tô sai mã đề kiểm tra" },
+            { name: "QUY ĐỔI ĐÁNH GIÁ TX", desc: "Đạt Điểm Tuyệt Đối 1 cột Thường xuyên" }
+        ];
+
+        let pName = "", pClass = "", currentCardIndex = 0, score = 0, hearts = 3, combo = 0, timerInterval, timeLeft = 20, isCardActive = false, usedRevive = false;
+
+        function checkLimits() {
+            const today = new Date().toLocaleDateString();
+            if (localStorage.getItem("m34_date") !== today) {
+                localStorage.setItem("m34_date", today);
+                localStorage.removeItem("m34_cd");
+            }
+            const cd = parseInt(localStorage.getItem("m34_cd") || "0");
+            if (cd > Date.now()) { showCooldown(cd); return false; }
+            return true;
+        }
+
+        function initAudioAndStart() { initAudio(); startGame(); }
+
+        function startGame() {
+            pName = document.getElementById("playerName").value.trim();
+            pClass = document.getElementById("playerClass").value.trim();
+            if(!pName || !pClass) { document.getElementById("error-msg").style.display = "block"; return; }
+            if (!checkLimits()) return;
+
+            document.getElementById("login-screen").classList.remove("active");
+            document.getElementById("game-screen").classList.add("active");
+
+            score = 0; hearts = 3; combo = 0; currentCardIndex = 0; usedRevive = false; updateHUD();
+            generateDeck(); renderCard();
+        }
+
+        function updateHUD() {
+            document.getElementById("ui-score").innerText = score;
+            document.getElementById("ui-hearts").innerText = "❤️".repeat(hearts) + "🖤".repeat(3 - hearts);
+            
+            const cbEl = document.getElementById("ui-combo");
+            if (combo >= 3) {
+                cbEl.innerText = `COMBO x${combo}`;
+                cbEl.classList.add("show");
+            } else {
+                cbEl.classList.remove("show");
+            }
+        }
+
+        function renderCard() {
+            if (currentCardIndex >= deck.length) { endGame(true); return; }
+            isCardActive = true;
+            const card = deck[currentCardIndex];
+            
+            document.getElementById("card-area").innerHTML = `
+                <div class="card" id="active-card">
+                    <div class="laurel laurel-left"></div>
+                    <div class="laurel laurel-right"></div>
+                    <div class="card-province ${card.colorClass}">📍 ${card.province}</div>
+                    <div class="card-context"><div class="card-context-inner">"${card.contextText}"</div></div>
+                    <div style="color: #64748b; font-size: 0.85rem; font-weight:bold; position:relative; z-index:2;">ĐƠN HÀNG NHÂN SỰ:</div>
+                    <div class="card-job"><span>${card.jobTitle}</span></div>
+                </div>`;
+            
+            timeLeft = 20; updateTimerBar(); clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1; updateTimerBar();
+                if(timeLeft > 0 && timeLeft <= 5 && Number.isInteger(parseFloat(timeLeft.toFixed(1)))) playSnd('tick');
+                if(timeLeft <= 0) { clearInterval(timerInterval); handleAnswer(null); }
+            }, 100);
+            setupSwipe();
+        }
+
+        function updateTimerBar() {
+            const pct = (timeLeft / 20) * 100;
+            document.getElementById("ui-timer").style.width = pct + "%";
+            document.getElementById("ui-timer").className = pct < 30 ? "timer-fill warning" : "timer-fill";
+        }
+
+        function setupSwipe() {
+            const el = document.getElementById('active-card');
+            if(!el) return; let startY = 0;
+            el.addEventListener('touchstart', e => { startY = e.changedTouches[0].screenY; }, {passive: false});
+            el.addEventListener('touchend', e => {
+                if(!isCardActive) return;
+                let diff = startY - e.changedTouches[0].screenY;
+                if(diff > 50) handleAnswer(true); else if(diff < -50) handleAnswer(false);
+            }, {passive: false});
+        }
+
+        function handleAnswer(choice) {
+            if(!isCardActive) return; isCardActive = false; clearInterval(timerInterval);
+            const card = deck[currentCardIndex], el = document.getElementById("active-card");
+            if(choice === true) el.classList.add("swipe-up"); else if(choice === false) el.classList.add("swipe-down");
+
+            setTimeout(() => {
+                if (choice === null) loseHeart("Quá chậm! Hết thời gian phân tích.");
+                else if (choice === card.isCorrect) { 
+                    playSnd('ok'); score++; combo++; updateHUD(); currentCardIndex++; renderCard(); 
+                }
+                else loseHeart(card.isCorrect ? "SAI! Đơn hàng này HOÀN TOÀN TƯƠNG THÍCH với bối cảnh địa phương." : `SAI BỐI CẢNH! ${card.explanation}`);
+            }, 250);
+        }
+
+        function loseHeart(reason) {
+            playSnd('fail'); hearts--; combo = 0; updateHUD();
+            document.getElementById("feedback-text").innerText = reason;
+            document.getElementById("feedback-popup").style.display = "flex";
+        }
+
+        function nextCard() {
+            document.getElementById("feedback-popup").style.display = "none";
+            if (hearts <= 0) {
+                if (!usedRevive) showRevivePopup();
+                else endGame(false);
+            } else { currentCardIndex++; renderCard(); }
+        }
+
+        function showRevivePopup() {
+            usedRevive = true;
+            const q = reviveQuestions[Math.floor(Math.random() * reviveQuestions.length)];
+            document.getElementById("revive-question").innerText = q.q;
+            let ansHtml = "";
+            q.options.forEach((opt, idx) => {
+                ansHtml += `<button class="ans-btn" onclick="checkRevive(${idx === q.ans})">${opt}</button>`;
+            });
+            document.getElementById("revive-answers").innerHTML = ansHtml;
+            document.getElementById("revive-popup").style.display = "flex";
+        }
+
+        function checkRevive(isCorrect) {
+            document.getElementById("revive-popup").style.display = "none";
+            if (isCorrect) {
+                playSnd('ok'); hearts = 1; updateHUD(); currentCardIndex++; renderCard();
+            } else {
+                playSnd('fail'); endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            clearInterval(timerInterval);
+            document.getElementById("game-screen").classList.remove("active");
+            document.getElementById("result-screen").classList.add("active");
+
+            if(isWin) {
+                document.getElementById("result-title").innerText = "🎉 ĐÁNH GIÁ THÀNH CÔNG!";
+                document.getElementById("result-title").style.color = "#22c55e";
+                triggerConfetti();
+                
+                document.getElementById("reward-selection").style.display = "block";
+                
+                if(hearts === 3) {
+                    document.getElementById("result-subtitle").innerText = "Hoàn thành nhiệm vụ hoàn hảo.";
+                    document.getElementById("reward-rank").innerText = "🏆 CHIẾN THẦN QUY HOẠCH";
+                    document.getElementById("reward-rank").style.color = "#ef4444"; 
+                    document.getElementById("btn-s-rank").style.display = "block";
+                } else if (hearts === 2) {
+                    document.getElementById("result-subtitle").innerText = "Hoàn thành xuất sắc nhưng có xước sát.";
+                    document.getElementById("reward-rank").innerText = "🎖️ CHUYÊN GIA SĂN ĐẦU NGƯỜI";
+                    document.getElementById("reward-rank").style.color = "#f59e0b"; 
+                    document.getElementById("btn-s-rank").style.display = "none";
+                } else {
+                    document.getElementById("result-subtitle").innerText = "Hoàn thành nhiệm vụ ở mức tối thiểu.";
+                    document.getElementById("reward-rank").innerText = "🔰 THỰC TẬP SINH ĐỊA LÍ";
+                    document.getElementById("reward-rank").style.color = "#3b82f6"; 
+                    document.getElementById("btn-s-rank").style.display = "none";
+                }
+            } else {
+                document.getElementById("result-title").innerText = "❌ CHƯA ĐẠT YÊU CẦU!";
+                document.getElementById("result-title").style.color = "#ef4444";
+                document.getElementById("result-subtitle").innerText = "Bạn đã phân tích sai quá nhiều. Vui lòng ôn lại lý thuyết.";
+                const cdTime = Date.now() + 15 * 60 * 1000;
+                localStorage.setItem("m34_cd", cdTime);
+            }
+        }
+
+        function issueVoucher(idx) {
+            document.getElementById("reward-selection").style.display = "none";
+            const rw = rewards[idx];
+            document.getElementById("reward-name").innerText = rw.name;
+            document.getElementById("reward-desc").innerText = rw.desc;
+            document.getElementById("v-name").innerText = pName;
+            document.getElementById("v-class").innerText = pClass;
+            document.getElementById("v-time").innerText = new Date().toLocaleString('vi-VN');
+            document.getElementById("v-hash").innerText = "K12-" + Math.random().toString(36).substring(2,8).toUpperCase();
+            
+            document.getElementById("voucher-card").style.display = "block";
+            document.getElementById("btn-capture").style.display = "block";
+        }
+
+        function finishGameSession() { location.reload(); }
+
+        function showCooldown(endTime) {
+            document.getElementById("login-screen").classList.add("active");
+            document.getElementById("limit-info").style.display = "block";
+            const tEl = document.getElementById("login-cooldown");
+            setInterval(() => {
+                const diff = endTime - Date.now();
+                if(diff <= 0) location.reload();
+                else tEl.innerText = `${Math.floor(diff/1000/60).toString().padStart(2,'0')}:${Math.floor((diff/1000)%60).toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+
+        function triggerConfetti() {
+            var end = Date.now() + 3000;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: {x: 0}, colors: ['#facc15', '#22c55e'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: {x: 1}, colors: ['#facc15', '#22c55e'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function captureVoucher() {
+            html2canvas(document.getElementById("voucher-card"), {backgroundColor: "#fffbeb"}).then(canvas => {
+                let a = document.createElement("a"); a.href = canvas.toDataURL("image/png");
+                a.download = `Voucher_K12_${pClass}_${pName.replace(/\s+/g, '')}.png`; a.click();
+            });
+        }
+        checkLimits();
+    </script>
+</body>
+</html>
